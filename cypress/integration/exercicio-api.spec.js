@@ -4,12 +4,17 @@ import usuarios from '../contratos/usuarios.contract'
 
 describe('Testes da Funcionalidade Usuários', () => {
 
+  let token
+  before(() => {
+    cy.token('EronCRsales@ebac.com', 'teste').then(tkn => { token = tkn})
+  });
+
 
      describe('Contratos de usuários', () => {
      
      
        it('Deve validar contrato de usuários', () => {
-               cy.request('http://localhost:3000/usuarios').then(response => {
+               cy.request('usuarios').then(response => {
                  return usuarios.validateAsync(response.body)
                })
        });
@@ -21,7 +26,7 @@ describe('Testes da Funcionalidade Usuários', () => {
     
           cy.request({
             method: 'POST',
-            url: 'http://localhost:3000/usuarios',
+            url: 'usuarios',
             body: {
               "nome": "Eron Sales",
               "email": "EronCRsales@ebac.com",
@@ -38,14 +43,14 @@ describe('Testes da Funcionalidade Usuários', () => {
         });
       
         it('Deve alterar um usuário já cadastrado', () => {
-          cy.request('http://localhost:3000/usuarios/IBps4Mlai9CGzwzH').then(response => {
+          cy.request('usuarios/IBps4Mlai9CGzwzH').then(response => {
             let id = response.body._id
             cy.request({
               method: 'PUT',
-              url: `http://localhost:3000/usuarios/${id}`,
-              headers: {authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkVyb2xzYWxlc0BlYmFjLmNvbSIsInBhc3N3b3JkIjoidGVzdGUiLCJpYXQiOjE2OTk0MDc2NDMsImV4cCI6MTY5OTQwODI0M30.qAJgx2MoF1RsoT5Uoy3GzED2U8ew0p-Oq1SPjOuq9CU"},
+              url: `usuarios/${id}`,
+              headers: {authorization: token},
               body: {
-                "nome": "Eron CR7 Sales",
+                "nome": "Eron CRSales",
                 "email": "Eronsales@ebac.com",
                 "password": "teste",
                 "administrador": "true"
@@ -67,7 +72,7 @@ describe('Testes da Funcionalidade Usuários', () => {
           let id = response.body._id
           cy.request({
             method: 'DELETE',
-            url: `http://localhost:3000/usuarios/${id}`
+            url: `usuarios/${id}`
             
       
           }).then(response =>{
@@ -86,7 +91,7 @@ describe('Testes da Funcionalidade Usuários', () => {
       it('Deve listar usuarios cadastrados', () => {
           cy.request({
             method: 'GET',
-            url: 'http://localhost:3000/usuarios'
+            url: 'usuarios'
           }).then((response) => {
             expect(response.body.usuarios[0])
             expect(response.status).to.equal(200)
@@ -98,7 +103,7 @@ describe('Testes da Funcionalidade Usuários', () => {
         it('Deve validar um usuário com email inválido', () => {
           cy.request({
             method: 'POST',
-            url: 'http://localhost:3000/login',
+            url: 'login',
             body: {
               "email": "Erolsal@ebac.com",
               "password": "teste"
